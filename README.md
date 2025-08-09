@@ -1,4 +1,5 @@
 Court-Data Fetcher & Mini-Dashboard
+
 A lightweight web application to fetch and display public case data from Indian court websites. This project provides a simple, clean interface for users to query case information and view the latest details.
 
 License: MIT License
