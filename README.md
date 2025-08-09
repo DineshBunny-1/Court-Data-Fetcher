@@ -6,11 +6,13 @@ This project is a small web application that allows users to query Indian court 
 ---
 
 ## Court Chosen
-This project targets the **Delhi High Court** website:
 
-- [https://delhihighcourt.nic.in/](https://delhihighcourt.nic.in/)
+At present, this project **does not integrate with any real court website**. Instead, it uses static/sample data to simulate the case fetching functionality.
 
-Alternatively, you can configure the app to scrape a district court from the [eCourts portal](https://districts.ecourts.gov.in/) with minor modifications.
+Future versions may implement scraping from the Delhi High Court ([https://delhihighcourt.nic.in/](https://delhihighcourt.nic.in/)) or a District Court eCourts portal ([https://districts.ecourts.gov.in/](https://districts.ecourts.gov.in/)).
+
+The project structure and UI are designed to support real-time integration when court data scraping is implemented.
+
 
 ---
 
