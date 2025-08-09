@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Court-Data Fetcher</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f3f4f6;
+      background-image: 
+        radial-gradient(circle at 15% 50%, #e0e7ff 0%, transparent 30%),
+        radial-gradient(circle at 85% 30%, #d1fae5 0%, transparent 25%);
+      min-height: 100vh;
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+    }
+    .form-input {
+      background-color: rgba(229, 231, 235, 0.7);
+    }
+    .form-input:focus {
+      background-color: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 0 0 2px #1e3a8a;
+      outline: none;
+    }
+  </style>
+</head>
+<body class="p-6">
+
+  <!-- Header -->
+  <header class="w-full py-4 px-4 md:px-8 sticky top-0 z-40 bg-white/30 backdrop-blur-md">
+    <div class="container mx-auto flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <span class="text-3xl">⚖️</span>
+        <h1 class="text-2xl font-bold text-[#1e3a8a]">Court-Data Fetcher</h1>
+      </div>
+      <p class="hidden md:block text-sm text-gray-500">Access Indian Court Records Effortlessly</p>
+    </div>
+  </header>
+
+  <div class="lg:flex lg:gap-6 max-w-6xl mx-auto mt-6">
+    <!-- Left Column: Search Form -->
+    <div class="lg:w-1/2 w-full glass-card rounded-2xl shadow-xl p-8">
+      <h2 class="text-xl font-semibold text-[#1e3a8a] mb-4">Search Case</h2>
+      <form id="case-form" class="space-y-5">
+        <div>
+          <label for="case-type" class="block text-xs font-semibold text-gray-600 uppercase">Case Type</label>
+          <select id="case-type" name="case-type" class="form-input mt-1 block w-full rounded-lg py-3 px-4">
+            <option>Writ Petition (Civil)</option>
+            <option>Special Leave Petition (Criminal)</option>
+            <option>Civil Appeal</option>
+            <option>Criminal Appeal</option>
+            <option>Contempt Petition</option>
+          </select>
+        </div>
+        <div>
+          <label for="case-number" class="block text-xs font-semibold text-gray-600 uppercase">Case Number</label>
+          <input type="text" id="case-number" placeholder="e.g., 12345" class="form-input mt-1 block w-full rounded-lg py-3 px-4">
+        </div>
+        <div>
+          <label for="filing-year" class="block text-xs font-semibold text-gray-600 uppercase">Filing Year</label>
+          <select id="filing-year" class="form-input mt-1 block w-full rounded-lg py-3 px-4">
+            <option>2024</option>
+            <option>2023</option>
+            <option>2022</option>
+            <option>2021</option>
+            <option>2020</option>
+          </select>
+        </div>
+        <button type="submit" class="w-full bg-[#1e3a8a] text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-800">Fetch Details</button>
+      </form>
+    </div>
+
+    <!-- Right Column: History Panel -->
+    <div class="lg:w-1/2 w-full mt-8 lg:mt-0">
+      <div id="history-section" class="glass-card rounded-2xl shadow-xl flex flex-col">
+        <div class="p-8">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="font-bold text-lg text-[#1e3a8a]">Recent Searches</h3>
+            <button id="clear-history-btn" class="text-xs text-red-600 hover:text-red-800 font-semibold hidden">Clear All</button>
+          </div>
+          <div id="history-list-container" class="overflow-y-auto" style="max-height: 350px;">
+            <ul id="history-list" class="space-y-3 text-sm"></ul>
+            <p id="empty-history-msg" class="text-center text-gray-500 hidden">No search history yet.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+const API_URL = "http://127.0.0.1:5000/api/fetch-case";
+const HISTORY_KEY = "courtSearchHistory";
+
+function renderHistory() {
+  const history = JSON.parse(localStorage.getItem(HISTORY_KEY)) || [];
+  const list = document.getElementById("history-list");
+  const emptyMsg = document.getElementById("empty-history-msg");
+  const clearBtn = document.getElementById("clear-history-btn");
+  list.innerHTML = "";
+
+  if (history.length === 0) {
+    emptyMsg.classList.remove("hidden");
+    clearBtn.classList.add("hidden");
+    return;
+  }
+  emptyMsg.classList.add("hidden");
+  clearBtn.classList.remove("hidden");
+
+  history.forEach(item => {
+    const li = document.createElement("li");
+    li.className = "bg-white/40 p-3 rounded-lg hover:bg-white/60 cursor-pointer";
+    li.innerHTML = `<strong>${item.caseType}</strong> - ${item.caseNumber} (${item.filingYear})`;
+    li.onclick = () => {
+      localStorage.setItem("courtResult", JSON.stringify(item.result));
+      window.location.href = "results.html";
+    };
+    list.appendChild(li);
+  });
+}
+
+function saveHistory(entry) {
+  let history = JSON.parse(localStorage.getItem(HISTORY_KEY)) || [];
+  history.unshift(entry);
+  history = history.slice(0, 10);
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+}
+
+document.getElementById("clear-history-btn").addEventListener("click", () => {
+  localStorage.removeItem(HISTORY_KEY);
+  renderHistory();
+});
+
+document.getElementById("case-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const caseType = document.getElementById("case-type").value;
+  const caseNumber = document.getElementById("case-number").value.trim();
+  const filingYear = document.getElementById("filing-year").value;
+
+  if (!caseNumber) { alert("Please enter a case number"); return; }
+
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ caseType, caseNumber, filingYear })
+    });
+    if (!res.ok) throw new Error("API request failed");
+    const data = await res.json();
+    localStorage.setItem("courtResult", JSON.stringify(data));
+    saveHistory({ caseType, caseNumber, filingYear, result: data });
+
+    // Redirect to loading page
+    window.location.href = "loading.html";
+  } catch (err) {
+    alert("Error fetching case details. Check server connection.");
+    console.error(err);
+  }
+});
+
+renderHistory();
+</script>
+</body>
+</html>

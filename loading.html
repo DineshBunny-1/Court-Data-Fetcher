@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loading...</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f3f4f6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+  .gavel-spinner {
+    font-size: 3rem;
+    animation: spin 1.5s linear infinite;
+  }
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    25% { transform: rotate(-25deg); }
+    75% { transform: rotate(25deg); }
+    100% { transform: rotate(0deg); }
+  }
+</style>
+</head>
+<body>
+  <div class="text-center">
+    <div class="gavel-spinner text-[#1e3a8a]">⚖️</div>
+    <p class="text-gray-500 mt-4 text-lg">Fetching records from server...</p>
+  </div>
+
+<script>
+// Wait for 2 seconds before going to results.html
+setTimeout(() => {
+  window.location.href = "results.html";
+}, 2000);
+</script>
+</body>
+</html>
