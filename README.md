@@ -145,5 +145,6 @@ Please refer to the demo.mp4 file in the repo root for a ≤5-minute screen capt
 Contact
 For questions or contributions, open an issue or contact:
 
-Your Name — your.email@example.com
-GitHub: https://github.com/yourusername
+Boga Sai Dinesh — dinesboga15@gmail.com
+
+GitHub: https://github.com/DineshBunny-1
