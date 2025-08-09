@@ -57,7 +57,7 @@ The project structure and UI are designed to support real-time integration when 
 ### Installation
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/court-data-fetcher.git
+   git clone https://github.com/DineshBunny-1/court-data-fetcher.git
    cd court-data-fetcher
 Create and activate a virtual environment:
 
