@@ -1,96 +1,147 @@
-Court-Data Fetcher & Mini-Dashboard
+# Court-Data Fetcher & Mini-Dashboard
 
-A lightweight web application to fetch and display public case data from Indian court websites. This project provides a simple, clean interface for users to query case information and view the latest details.
+## Project Overview
+This project is a small web application that allows users to query Indian court case details by selecting the **Case Type**, **Case Number**, and **Filing Year**. It fetches and displays case metadata such as parties’ names, hearing dates, and links to the latest orders or judgments in PDF format from a selected court's public website. Users can view details and download PDFs directly from the app.
 
-License: MIT License
+---
 
-► Tech Stack
-Frontend: HTML, Tailwind CSS, Vanilla JavaScript
+## Court Chosen
+This project targets the **Delhi High Court** website:
 
-Backend: Python with Flask
+- [https://delhihighcourt.nic.in/](https://delhihighcourt.nic.in/)
 
-Data Source: Direct API Integration (simulated)
+Alternatively, you can configure the app to scrape a district court from the [eCourts portal](https://districts.ecourts.gov.in/) with minor modifications.
 
-Database: SQLite
+---
 
-Python Environment: venv
+## Features
+- **User Interface:** Simple web form with dropdowns and inputs for:
+  - Case Type
+  - Case Number
+  - Filing Year
+- **Backend:**
+  - Programmatic scraping of the court website upon form submission.
+  - Parsing of:
+    - Parties’ names
+    - Filing and next-hearing dates
+    - Links to order/judgment PDFs (most recent shown by default)
+- **Storage:**
+  - Logs all queries and raw HTML responses in SQLite database.
+- **Display:**
+  - Clean rendering of parsed case details.
+  - Downloadable PDF links for latest orders.
+- **Error Handling:**
+  - User-friendly messages for invalid input or site downtime.
 
-► Setup and Installation
-Follow these steps to run the application locally.
+---
 
-1. Prerequisites
-Python 3.8+
+## Technology Stack
+- **Backend:** Python with Flask (or your preferred stack)
+- **Scraping:** Requests + BeautifulSoup or Selenium for dynamic content
+- **Database:** SQLite for lightweight local storage
+- **Frontend:** HTML, CSS, and JavaScript (vanilla or lightweight framework)
+- **Others:** Use of headless browser (Selenium or Playwright) to bypass view-state or handle dynamic tokens
 
-pip (Python package installer)
+---
 
-2. Clone the Repository
-First, clone this repository to your local machine:
+## Setup Instructions
 
-git clone <your-repository-url>
-cd court-data-fetcher
+### Prerequisites
+- Python 3.8+
+- pip package manager
+- SQLite (usually bundled with Python)
+- Chrome or Firefox browser (for Selenium/Playwright headless browsing)
 
-3. Backend Setup
-Set up a Python virtual environment and install the required dependencies.
+### Installation
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/court-data-fetcher.git
+   cd court-data-fetcher
+Create and activate a virtual environment:
 
-# Create a virtual environment
+bash
+Copy
+Edit
 python -m venv venv
+source venv/bin/activate      # On Windows: venv\Scripts\activate
+Install dependencies:
 
-# Activate the virtual environment
-# On Windows:
-venv\Scripts\activate
-# On macOS/Linux:
-source venv/bin/activate
+bash
+Copy
+Edit
+pip install -r requirements.txt
+Configure environment variables (optional):
+Create a .env file with variables like:
 
-# Install the required Python packages
-pip install Flask flask-cors requests
+ini
+Copy
+Edit
+FLASK_ENV=development
+DATABASE_URL=sqlite:///court_data.db
+Run the Flask app:
 
-4. Running the Application
-A. Start the Backend Server:
+bash
+Copy
+Edit
+flask run
+Open your browser at http://localhost:5000
 
-In your terminal (with the virtual environment activated), run the Flask server:
+CAPTCHA and View-State Handling Strategy
+The Delhi High Court site uses dynamic tokens in the request parameters to prevent CSRF attacks.
 
-python app.py
+To bypass these:
 
-You should see output indicating the server is running on http://127.0.0.1:5000. A database file named query_log.db will be automatically created.
+The scraper first performs a GET request to load the initial page and parse hidden tokens (viewstate, eventvalidation, etc.)
 
-B. Open the Frontend:
+These tokens are then included in the POST request for submitting the query.
 
-Navigate to the project folder and open the index.html file in your web browser. You can now use the interface to search for cases.
+CAPTCHA:
 
-To test, use a valid case number from the mock data, e.g., Case Number 12345 and Year 2024.
+Currently, the Delhi High Court site does not enforce CAPTCHA for basic case status queries.
 
-► API Integration
-This project has been designed to connect to an external API that provides case details. The web scraping logic has been removed in favor of this more robust method.
+If CAPTCHA is introduced, a manual input field is displayed on the UI for users to enter the CAPTCHA text.
 
-Current Implementation (Simulation):
+Alternatively, integration with a remote CAPTCHA-solving service (e.g., 2Captcha) can be added.
 
-The app.py script currently simulates a call to an external API. It contains a mock database of cases to demonstrate the functionality of:
+All token extraction and submission logic is documented in the code comments.
 
-Receiving a request from the frontend.
+Database Schema
+Table: queries
 
-Searching through a list of results returned by an API.
+id INTEGER PRIMARY KEY AUTOINCREMENT
 
-Finding the specific case that matches the user's query.
+case_type TEXT
 
-Mapping the API data to the format required by the frontend.
+case_number TEXT
 
-How to Use Your Real API:
+filing_year TEXT
 
-To connect to your actual API, you will need to edit the fetch_data_from_external_api function in app.py:
+timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
 
-Uncomment import requests.
+raw_response TEXT (stores raw HTML or JSON response for debugging)
 
-Replace the placeholder API_KEY and API_URL with your actual credentials.
+Error Handling
+If case number is invalid or no data is found, a user-friendly message is shown.
 
-Uncomment the requests.get(...) block to make a live network request.
+If court website is down or unreachable, the app displays an informative error and suggests retrying later.
 
-Adjust the field mapping (e.g., case['petitioner']) to match the field names in your API's JSON response.
+Optional Extras
+Dockerfile included for containerized deployment.
 
-► Project File Structure
-index.html: The main frontend file containing the HTML structure and CSS.
+Pagination support for multiple orders/judgments.
 
-script.js: Contains all the client-side JavaScript for handling user input, API calls, and displaying results.
+Basic unit tests for scraper and API endpoints.
 
-app.py: The Flask backend server that handles API requests, calls the external case API, and logs data to the database.
+GitHub Actions CI workflow for automatic testing.
 
-query_log.db: The SQLite database file where all search queries and their corresponding results are stored.
+License
+This project is licensed under the MIT License. See the LICENSE file for details.
+
+Demo
+Please refer to the demo.mp4 file in the repo root for a ≤5-minute screen capture showing the full end-to-end flow.
+
+Contact
+For questions or contributions, open an issue or contact:
+
+Your Name — your.email@example.com
+GitHub: https://github.com/yourusername
